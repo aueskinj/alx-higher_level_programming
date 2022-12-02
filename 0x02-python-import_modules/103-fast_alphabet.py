@@ -1,2 +1,2 @@
-#!/usr/bin/python3 
-import fast_alphabet.py 
+#!/usr/bin/python3
+import fast_alphabet
