@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Script Name: run_python.sh
+
+# ---- Constants (Customize these) ----
+PYTHON_SCRIPT="your_python_script.py"  # Replace with your script's name
+PYTHON_PATH="/path/to/your/python"    # Replace if Python isn't in your PATH
+
+# ---- Main Execution ----
+
+# 1. Check if the Python script exists
+if [ ! -f "$PYTHON_SCRIPT" ]; then
+    echo "Error: Python script '$PYTHON_SCRIPT' not found."
+    exit 1  # Exit with an error code
+fi
+
+# 2. (Optional) Make the script executable if needed
+chmod +x "$PYTHON_SCRIPT"  # Comment out if already executable
+
+# 3. Run the Python script
+"$PYTHON_PATH"/python "$PYTHON_SCRIPT"
+
+# 4. Handle the exit code of the Python script
+if [ $? -eq 0 ]; then
+    echo "Python script executed successfully."
+else
+    echo "Python script failed with an error. See output for details."
+fi
