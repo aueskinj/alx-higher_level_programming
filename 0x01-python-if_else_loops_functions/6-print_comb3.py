@@ -11,11 +11,5 @@ You can only use no more than 2 loops in your code
 You are not allowed to store numbers or strings in a variable
 You are not allowed to import any module"""
 
-for i in range(0, 10):
-    for k in range(0, 10):
-        if int(f"{i}{k}") < int(f"{k}{i}"):  # Last number (99) should not have a comma
-            if int(f"{i}{k}") == 89:
-                print("{}{}".format(i,k), end="") 
-                continue   
-            print("{}{}, ".format(i,k), end="")
+print(", ".join(f"{d1}{d2}" for d1 in range(10) for d2 in range(d1 + 1, 10)), end="")
           
