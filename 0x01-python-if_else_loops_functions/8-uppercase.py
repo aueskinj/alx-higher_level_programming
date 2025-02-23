@@ -9,6 +9,5 @@ def uppercase(c):
             newc = newc + chr(letter)
         else:
             newc = newc + i
-        
-    else:
-        return newc
+    print("{}".format(newc), end="")
+    print("")
