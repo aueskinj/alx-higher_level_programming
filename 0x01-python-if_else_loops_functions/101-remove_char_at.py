@@ -6,6 +6,4 @@ You are not allowed to import any module'''
 
 def remove_char_at(str, n):
     '''get's rid of the character at the position n'''
-    if n < 0:
-        return (str)
     return str[:n] + str[n+1:]
