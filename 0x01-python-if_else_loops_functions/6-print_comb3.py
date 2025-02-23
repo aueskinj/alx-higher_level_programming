@@ -15,6 +15,7 @@ for i in range(0, 10):
     for k in range(0, 10):
         if int(f"{i}{k}") < int(f"{k}{i}"):  # Last number (99) should not have a comma
             if int(f"{i}{k}") == 89:
-                print("{}{}".format(i,k))    
+                print("{}{}".format(i,k), end="") 
+                continue   
             print("{}{}, ".format(i,k), end="")
           
