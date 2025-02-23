@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
+
 def islower(letter):
     """Scans each character in text.
 Converts only lowercase letters (a-z) to uppercase (A-Z).
