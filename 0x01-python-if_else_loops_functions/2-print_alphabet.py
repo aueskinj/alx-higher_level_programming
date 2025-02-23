@@ -1,4 +1,3 @@
 #!/usr/bin/python3
 
-for i in range(97, 123):  
-    print(f"{i}: {chr(i)}")
+print("\n".join([f"{i}: {chr(i)}" for i in range(97, 123)]))
