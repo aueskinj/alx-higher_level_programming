@@ -2,7 +2,6 @@
 
 import dis
 import marshal
-import sys
 
 def extract_pyc_names(pyc_file):
     with open(pyc_file, "rb") as f:
