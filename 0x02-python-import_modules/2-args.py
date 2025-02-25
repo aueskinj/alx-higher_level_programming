@@ -9,5 +9,4 @@ if __name__ == "__main__":
     else:
         print(f"{arg_count} argument{'s' if arg_count > 1 else ''}:")
         for index, arg in enumerate(sys.argv[1:], start=1):
-            print(f"{index}: {arg}")  
-    
+            print("{}: {}".format(index, arg))  
