@@ -5,7 +5,6 @@ import sys
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("0 arguments.")
-        sys.exit(1)
 
     elif(len(sys.argv) == 2):
         print("{} argument:".format(len(sys.argv[1:])))
@@ -14,5 +13,4 @@ if __name__ == "__main__":
         print("{} arguments:".format(len(sys.argv)))
         for index, arg in enumerate(sys.argv[1:], start = 1):
             print("{} : {}".format(index, arg))  
-
     
