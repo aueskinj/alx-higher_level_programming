@@ -3,79 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mouse Movement Capture</title>
+    <title>Bezier Curve from Mouse Data</title>
     <style>
-        body {
-            text-align: center;
-            font-family: Arial, sans-serif;
-        }
-        canvas {
-            border: 2px solid black;
-            display: block;
-            margin: 10px auto;
-        }
-        button {
-            padding: 10px;
-            margin-top: 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+        body { text-align: center; font-family: Arial, sans-serif; }
+        canvas { border: 2px solid black; margin-top: 10px; }
+        button { padding: 10px; margin-top: 10px; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <h2>Move Your Mouse to Draw</h2>
+    <h2>Bezier Curve from Mouse Movement</h2>
     <canvas id="canvas" width="600" height="400"></canvas>
-    <button id="download">Download Data</button>
 
     <script>
+        // Canvas setup
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        const downloadBtn = document.getElementById("download");
 
-        let isDrawing = false;
-        let mouseData = [];  // Stores mouse movement (x, y, timestamp)
+        // Load mouse movement data (Replace with actual file load logic)
+        const mouseData = [
+            {"x": 43, "y": 101}, {"x": 45, "y": 98}, {"x": 50, "y": 94}, {"x": 53, "y": 92}, 
+            {"x": 61, "y": 89}, {"x": 73, "y": 85}, {"x": 84, "y": 83}, {"x": 92, "y": 82}, 
+            {"x": 103, "y": 82}, {"x": 126, "y": 82}, {"x": 137, "y": 87}, {"x": 150, "y": 95}, 
+            {"x": 160, "y": 120}, {"x": 180, "y": 158}, {"x": 200, "y": 184}, {"x": 230, "y": 214}
+        ]; // Sampled points from JSON file
 
-        // Start capturing when mouse is pressed
-        canvas.addEventListener("mousedown", (event) => {
-            isDrawing = true;
-            ctx.beginPath(); // Start new path for drawing
-        });
+        // De Casteljau’s Algorithm for Bezier curve computation
+        function deCasteljau(points, t) {
+            while (points.length > 1) {
+                let newPoints = [];
+                for (let i = 0; i < points.length - 1; i++) {
+                    let x = (1 - t) * points[i].x + t * points[i + 1].x;
+                    let y = (1 - t) * points[i].y + t * points[i + 1].y;
+                    newPoints.push({ x, y });
+                }
+                points = newPoints;
+            }
+            return points[0]; // Final single computed point on the curve
+        }
 
-        // Capture mouse movement
-        canvas.addEventListener("mousemove", (event) => {
-            if (!isDrawing) return;
+        // Draw Bezier curve
+        function drawBezierCurve(points) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            let x = event.offsetX;
-            let y = event.offsetY;
-            let timestamp = Date.now();
+            // Draw control points
+            ctx.fillStyle = "red";
+            points.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
 
-            // Save data
-            mouseData.push({ x, y, timestamp });
-
-            // Draw line
-            ctx.lineTo(x, y);
+            // Draw connecting control polygon
+            ctx.strokeStyle = "brown";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
             ctx.stroke();
-        });
 
-        // Stop capturing when mouse is released
-        canvas.addEventListener("mouseup", () => {
-            isDrawing = false;
-        });
+            // Draw Bezier curve using De Casteljau’s algorithm
+            ctx.strokeStyle = "blue";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
 
-        // Stop capturing if mouse leaves the canvas
-        canvas.addEventListener("mouseleave", () => {
-            isDrawing = false;
-        });
+            for (let t = 0; t <= 1; t += 0.01) {
+                let point = deCasteljau([...points], t);
+                if (t === 0) {
+                    ctx.moveTo(point.x, point.y);
+                } else {
+                    ctx.lineTo(point.x, point.y);
+                }
+            }
 
-        // Download saved mouse movement data as JSON
-        downloadBtn.addEventListener("click", () => {
-            const blob = new Blob([JSON.stringify(mouseData, null, 2)], { type: "application/json" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "mouse_data.json";
-            link.click();
-        });
+            ctx.stroke();
+        }
+
+        // Render the Bezier curve
+        drawBezierCurve(mouseData);
     </script>
 
 </body>
