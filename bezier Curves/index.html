@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mouse Movement Capture</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            border: 2px solid black;
+            display: block;
+            margin: 10px auto;
+        }
+        button {
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Move Your Mouse to Draw</h2>
+    <canvas id="canvas" width="600" height="400"></canvas>
+    <button id="download">Download Data</button>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const downloadBtn = document.getElementById("download");
+
+        let isDrawing = false;
+        let mouseData = [];  // Stores mouse movement (x, y, timestamp)
+
+        // Start capturing when mouse is pressed
+        canvas.addEventListener("mousedown", (event) => {
+            isDrawing = true;
+            ctx.beginPath(); // Start new path for drawing
+        });
+
+        // Capture mouse movement
+        canvas.addEventListener("mousemove", (event) => {
+            if (!isDrawing) return;
+
+            let x = event.offsetX;
+            let y = event.offsetY;
+            let timestamp = Date.now();
+
+            // Save data
+            mouseData.push({ x, y, timestamp });
+
+            // Draw line
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        });
+
+        // Stop capturing when mouse is released
+        canvas.addEventListener("mouseup", () => {
+            isDrawing = false;
+        });
+
+        // Stop capturing if mouse leaves the canvas
+        canvas.addEventListener("mouseleave", () => {
+            isDrawing = false;
+        });
+
+        // Download saved mouse movement data as JSON
+        downloadBtn.addEventListener("click", () => {
+            const blob = new Blob([JSON.stringify(mouseData, null, 2)], { type: "application/json" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "mouse_data.json";
+            link.click();
+        });
+    </script>
+
+</body>
+</html>
