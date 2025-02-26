@@ -14,6 +14,7 @@
 
     <h2>Bezier Curve from Uploaded Mouse Data</h2>
     <input type="file" id="fileInput" accept=".json">
+    <button id="downloadButton">Download Smoothed Points</button>
     <canvas id="canvas" width="600" height="400"></canvas>
 
     <script>
@@ -21,8 +22,9 @@
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const fileInput = document.getElementById('fileInput');
+        const downloadButton = document.getElementById('downloadButton');
 
-        let mouseData = []; // Stores uploaded mouse movement data
+        let smoothedData = [];
 
         // Moving Average Smoothing
         function movingAverageSmoothing(points, windowSize = 5) {
@@ -128,16 +130,25 @@
             reader.onload = function(e) {
                 try {
                     let jsonData = JSON.parse(e.target.result);
-                    mouseData = jsonData.map(entry => ({ x: entry.x, y: entry.y }));
-                    let smoothed = movingAverageSmoothing(mouseData, 5);
-                    let reduced = ramerDouglasPeucker(smoothed, 2);
-                    drawBezierCurve(reduced);
+                    let rawData = jsonData.map(entry => ({ x: entry.x, y: entry.y }));
+                    let smoothed = movingAverageSmoothing(rawData, 5);
+                    smoothedData = ramerDouglasPeucker(smoothed, 2);
+                    drawBezierCurve(smoothedData);
                 } catch (error) {
                     alert("Invalid JSON file format!");
                     console.error(error);
                 }
             };
             reader.readAsText(file);
+        });
+
+        // Download smoothed points as JSON
+        downloadButton.addEventListener("click", () => {
+            const blob = new Blob([JSON.stringify(smoothedData, null, 2)], { type: "application/json" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "smoothed_mouse_data.json";
+            link.click();
         });
     </script>
 
