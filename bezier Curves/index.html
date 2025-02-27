@@ -3,153 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bezier Curve from Uploaded Mouse Data</title>
+    <title>Bezier Scrolling NavBar</title>
     <style>
-        body { text-align: center; font-family: Arial, sans-serif; }
-        canvas { border: 2px solid black; margin-top: 10px; display: block; margin-left: auto; margin-right: auto; }
-        input, button { padding: 10px; margin-top: 10px; font-size: 16px; cursor: pointer; }
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            overflow-x: hidden;
+        }
+        canvas {
+            border: 2px solid black;
+            display: block;
+            margin: 20px auto;
+        }
+        .nav-container {
+            width: 100%;
+            overflow-x: auto;
+            white-space: nowrap;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .nav-item {
+            display: inline-block;
+            padding: 15px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            color: black;
+            transition: color 0.3s ease;
+        }
+        .nav-item.active {
+            font-weight: bold;
+            color: red;
+        }
     </style>
 </head>
 <body>
 
-    <h2>Bezier Curve from Uploaded Mouse Data</h2>
-    <input type="file" id="fileInput" accept=".json">
-    <button id="downloadButton">Download Smoothed Points</button>
-    <canvas id="canvas" width="600" height="400"></canvas>
+    <h2>Bezier Scrolling NavBar</h2>
+    <div class="nav-container">
+        <div class="nav-item" onclick="selectNavItem(0)">Home</div>
+        <div class="nav-item" onclick="selectNavItem(1)">Profile</div>
+        <div class="nav-item" onclick="selectNavItem(2)">Messages</div>
+        <div class="nav-item" onclick="selectNavItem(3)">Settings</div>
+        <div class="nav-item" onclick="selectNavItem(4)">About</div>
+    </div>
+    <canvas id="canvas" width="600" height="100"></canvas>
 
     <script>
-        // Canvas setup
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        const fileInput = document.getElementById('fileInput');
-        const downloadButton = document.getElementById('downloadButton');
+        const navItems = document.querySelectorAll('.nav-item');
 
-        let smoothedData = [];
+        let selectedIndex = 0;
+        let ballX = 100;
+        let ballY = 70;
+        let indentWidth = 100;
+        let indentDepth = 20;
 
-        // Moving Average Smoothing
-        function movingAverageSmoothing(points, windowSize = 5) {
-            let smoothedPoints = [];
-            for (let i = 0; i < points.length; i++) {
-                let sumX = 0, sumY = 0, count = 0;
-                for (let j = Math.max(0, i - Math.floor(windowSize / 2)); j < Math.min(points.length, i + Math.floor(windowSize / 2)); j++) {
-                    sumX += points[j].x;
-                    sumY += points[j].y;
-                    count++;
-                }
-                smoothedPoints.push({ x: sumX / count, y: sumY / count });
-            }
-            return smoothedPoints;
-        }
-
-        // Ramer-Douglas-Peucker Algorithm
-        function ramerDouglasPeucker(points, epsilon) {
-            if (points.length < 3) return points;
-            let maxDist = 0, index = 0;
-            for (let i = 1; i < points.length - 1; i++) {
-                let dist = perpendicularDistance(points[i], points[0], points[points.length - 1]);
-                if (dist > maxDist) {
-                    maxDist = dist;
-                    index = i;
-                }
-            }
-            if (maxDist > epsilon) {
-                let left = ramerDouglasPeucker(points.slice(0, index + 1), epsilon);
-                let right = ramerDouglasPeucker(points.slice(index), epsilon);
-                return left.slice(0, left.length - 1).concat(right);
-            } else {
-                return [points[0], points[points.length - 1]];
-            }
-        }
-
-        function perpendicularDistance(point, lineStart, lineEnd) {
-            let num = Math.abs((lineEnd.y - lineStart.y) * point.x - (lineEnd.x - lineStart.x) * point.y + lineEnd.x * lineStart.y - lineEnd.y * lineStart.x);
-            let den = Math.sqrt(Math.pow(lineEnd.y - lineStart.y, 2) + Math.pow(lineEnd.x - lineStart.x, 2));
-            return num / den;
-        }
-
-        // De Casteljau’s Algorithm for Bezier curve computation
-        function deCasteljau(points, t) {
-            while (points.length > 1) {
-                let newPoints = [];
-                for (let i = 0; i < points.length - 1; i++) {
-                    let x = (1 - t) * points[i].x + t * points[i + 1].x;
-                    let y = (1 - t) * points[i].y + t * points[i + 1].y;
-                    newPoints.push({ x, y });
-                }
-                points = newPoints;
-            }
-            return points[0];
-        }
-
-        // Draw Bezier curve
-        function drawBezierCurve(points) {
+        function drawNavBar() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (points.length < 2) {
-                alert("Not enough points to generate a curve!");
-                return;
-            }
 
-            // Draw control points
-            ctx.fillStyle = "red";
-            points.forEach(p => {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
-                ctx.fill();
-            });
+            // Get selected item's position
+            const selectedItem = navItems[selectedIndex];
+            const rect = selectedItem.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2 - canvas.getBoundingClientRect().left;
 
-            // Draw control polygon
-            ctx.strokeStyle = "brown";
-            ctx.lineWidth = 1;
+            // Move ball towards new selected item
+            ballX += (centerX - ballX) * 0.1;
+
+            // Draw navigation background
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Bezier indent
             ctx.beginPath();
-            ctx.moveTo(points[0].x, points[0].y);
-            for (let i = 1; i < points.length; i++) {
-                ctx.lineTo(points[i].x, points[i].y);
-            }
+            ctx.moveTo(0, 0);
+            ctx.lineTo(ballX - indentWidth / 2, 0);
+
+            ctx.bezierCurveTo(
+                ballX - indentWidth * 0.25, indentDepth,
+                ballX + indentWidth * 0.25, indentDepth,
+                ballX + indentWidth / 2, 0
+            );
+
+            ctx.lineTo(canvas.width, 0);
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.lineTo(0, canvas.height);
+            ctx.closePath();
+            ctx.fillStyle = "white";
+            ctx.fill();
             ctx.stroke();
 
-            // Draw Bezier curve using De Casteljau’s algorithm
-            ctx.strokeStyle = "blue";
-            ctx.lineWidth = 2;
+            // Draw Ball
             ctx.beginPath();
-            for (let t = 0; t <= 1; t += 0.01) {
-                let point = deCasteljau([...points], t);
-                if (t === 0) {
-                    ctx.moveTo(point.x, point.y);
-                } else {
-                    ctx.lineTo(point.x, point.y);
-                }
-            }
+            ctx.arc(ballX, ballY, 15, 0, Math.PI * 2);
+            ctx.fillStyle = "red";
+            ctx.fill();
             ctx.stroke();
         }
 
-        // Handle file upload and parse JSON data
-        fileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    let jsonData = JSON.parse(e.target.result);
-                    let rawData = jsonData.map(entry => ({ x: entry.x, y: entry.y }));
-                    let smoothed = movingAverageSmoothing(rawData, 5);
-                    smoothedData = ramerDouglasPeucker(smoothed, 2);
-                    drawBezierCurve(smoothedData);
-                } catch (error) {
-                    alert("Invalid JSON file format!");
-                    console.error(error);
-                }
-            };
-            reader.readAsText(file);
-        });
+        function selectNavItem(index) {
+            selectedIndex = index;
 
-        // Download smoothed points as JSON
-        downloadButton.addEventListener("click", () => {
-            const blob = new Blob([JSON.stringify(smoothedData, null, 2)], { type: "application/json" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = "smoothed_mouse_data.json";
-            link.click();
-        });
+            // Update active class
+            navItems.forEach((item, i) => {
+                item.classList.toggle("active", i === index);
+            });
+        }
+
+        function animate() {
+            drawNavBar();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
     </script>
 
 </body>
