@@ -8,7 +8,7 @@ def roman_to_int(roman_string):
     for numeral in roman_string:
         current = rome[numeral]
         if current > previous:
-            total = total + (current - 2 * previous)#
+            total = total + (current - 2 * previous)#the value previous had been added to the total so this here is meant to account for that change.
         else: 
             total += current
         previous = current
