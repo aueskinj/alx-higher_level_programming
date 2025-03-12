@@ -1,8 +1,11 @@
 #!/usr/bin/python3
 def complex_delete(a_dictionary, value):
+    # print(new_dict)
     matching_keys = [key for key, Value in a_dictionary.items() if Value == value]
-    print(matching_keys)
-    return ({k: v for k, v in a_dictionary.items() if k not in matching_keys})
+    # print(matching_keys)
+    for i in matching_keys:
+        a_dictionary.pop(i)
+    return (a_dictionary)
 
 if __name__ == "__main__":
     complex_delete = __import__('102-complex_delete').complex_delete
