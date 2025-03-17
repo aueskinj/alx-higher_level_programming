@@ -15,11 +15,12 @@ def safe_print_list_integers(my_list=[], x=0):
     count = 0
     for i in range(x):
         try:
-            print("{:d}".format(my_list[i]))  # Prints the integer
+            print("{:d}".format(my_list[i]), end = "")  # Prints the integer
             count += 1
             
         except (TypeError, ValueError):
             pass
+    print("")
     return (count)
 if __name__ == "__main__":
 
