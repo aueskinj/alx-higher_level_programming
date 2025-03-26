@@ -2,7 +2,6 @@
 
 def mystery_function(a, b):
     result = 0
-
     
     for i in range(1, 3):
         try:
@@ -11,6 +10,7 @@ def mystery_function(a, b):
             result += (a ** b) / i
         except:
             result = a + b # This part is redundant in Python as `break` is inside `except`
+            break
 
     return result
 
