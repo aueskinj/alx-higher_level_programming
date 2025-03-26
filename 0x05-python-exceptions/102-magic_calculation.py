@@ -9,8 +9,7 @@ def mystery_function(a, b):
                 raise Exception("Too far")
             result += (a ** b) / i
     except:
-        result = a + b
-        break  # This part is redundant in Python as `break` is inside `except`
+        result = a + b # This part is redundant in Python as `break` is inside `except`
 
     return result
 
