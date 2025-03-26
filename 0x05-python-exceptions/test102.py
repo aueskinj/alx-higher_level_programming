@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 import unittest
 
-from magic_calculation import magic_calculation  # Import the function if it's in another file
+# from magic_calculation import magic_calculation  # Import the function if it's in another file
+magic_calculation = __import__('102-magic_calculation').mystery_function
 
 class TestMagicCalculation(unittest.TestCase):
     def test_normal_cases(self):
