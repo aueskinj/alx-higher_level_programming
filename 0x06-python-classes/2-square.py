@@ -5,17 +5,23 @@ This module defines a Square class that represents a square
 with a private size attribute. No type or value verification is done.
 """
 
-
 class Square:
     """A class that defines a square by its size.
 
     The size is a private instance attribute.
     """
 
-    def __init__(self, size):
+    def __init__(self, size=0):
         """Initialize a new Square instance.
 
         Args:
-            size: The size of the square (no type/value verification).
+            size: The size of the square (with type and value verification).
         """
+        if not isinstance(size, int):
+            raise TypeError("size must be an integer")
+
+        if size < 0:
+            raise ValueError("size must be >= 0")
+
         self.__size = size
+
