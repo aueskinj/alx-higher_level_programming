@@ -27,7 +27,7 @@ def send_email(recipient_email, subject, body):
         print(f"Failed to send email: {e}")
 
 if __name__ == "__main__":
-    recipient_email = "ndungu.alvin@kra.go.ke"
+    recipient_email = "aueskinj@gmail.com"
     subject = "This is the subject"
     body = "This is the body of the email."
 
