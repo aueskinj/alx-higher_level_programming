@@ -1,0 +1,26 @@
+name: Scheduled Job
+
+on:
+  schedule:
+    - cron: "23 14 * * *"  
+  workflow_dispatch:      # Optional: allow manual trigger
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies (optional)
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run the script
+        run: python3 reminder.py
