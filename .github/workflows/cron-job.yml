@@ -2,7 +2,7 @@ name: Scheduled Job
 
 on:
   schedule:
-    - cron: "30 6 * * *"  
+    - cron: "00 7 * * *"  
   workflow_dispatch:      # Optional: allow manual trigger
 
 jobs:
@@ -17,10 +17,6 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-
-      - name: Install dependencies (optional)
-        run: |
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Run the script
         run: python3 reminder.py
