@@ -2,7 +2,7 @@ name: Scheduled Job
 
 on:
   schedule:
-    - cron: "11 7 * * *"   # Optional: allow manual trigger
+    - cron: "13 7 * * *"   # Optional: allow manual trigger
 
 jobs:
   run-script:
