@@ -2,8 +2,7 @@ name: Scheduled Job
 
 on:
   schedule:
-    - cron: "11 7 * * *"  
-  workflow_dispatch:      # Optional: allow manual trigger
+    - cron: "11 7 * * *"   # Optional: allow manual trigger
 
 jobs:
   run-script:
